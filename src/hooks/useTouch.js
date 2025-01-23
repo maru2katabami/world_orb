@@ -9,7 +9,7 @@ export default function useTouch() {
 
   const handleStart = useCallback( event => {
     setInit({ x: event.touches[0].clientX, y: event.touches[0].clientY })
-    if ( event.touches[1]) setTwo({ x: touches[1].clientX, y: touches[1].clientY, timestamp: Date.now()})
+    if ( event.touches[1]) setTwo({ x: event.touches[1].clientX, y: event.touches[1].clientY, timestamp: Date.now()})
   }, [])
 
   const handleMove = useCallback( event => {
