@@ -30,29 +30,29 @@ export default function useTouch() {
     setOne({ x, y, distance: clampedDistance, angle: Math.atan2( dy, dx ) * ( 180 / Math.PI )})
     setForce({ forward, backward, left, right })
   }, [ init ])
-  
+
   const handleEnd = useCallback((event) => {
     const remainingTouches = event.touches;
-    
+    const endedTouches = event.changedTouches;
+  
     if (remainingTouches.length === 0) {
-      // すべてのタッチが終了した場合の処理
+      // 全ての指が離れた場合
       setInit({ x: null, y: null });
       setOne({ x: null, y: null, distance: 0, angle: 0 });
       setForce({ forward: 0, backward: 0, left: 0, right: 0 });
-      setTwo({ x: null, y: null, timestamp: null, hold: 0 }); // twoもリセット
-    } else if (remainingTouches.length === 1 && two.timestamp) {
-      // 2つ目のタッチが終了した場合の処理
-      setTwo((prevTwo) => ({
-        ...prevTwo,
-        x: null,
-        y: null,
-        hold: Date.now() - prevTwo.timestamp, // ホールド時間を記録
+      setTwo({ x: null, y: null, timestamp: null, hold: 0 });
+    } else if (endedTouches.length === 1) {
+      // 特定の指が離れた場合
+      const touch = endedTouches[0]; // 離れた指の情報
+      setTwo((prev) => ({
+        ...prev,
+        x: touch.clientX,
+        y: touch.clientY,
+        hold: prev.timestamp ? Date.now() - prev.timestamp : 0,
       }));
     }
-  }, [two.timestamp]);
+  }, []);
   
-  
-
   useEffect(() => {
     window.addEventListener("touchstart", handleStart )
     window.addEventListener("touchmove", handleMove )
@@ -80,7 +80,7 @@ export default function useTouch() {
             boxShadow: "inset 0 0 50px skyblue",
             transform: `translate(-40px,-50%) rotate(${ one.angle }deg)`,
             transformOrigin: "40px center",
-            clipPath: one.distance >= 60 ? `polygon(0 0, calc(0% + 45px) 0, 100% 45%, 100% 55%, calc(0% + 45px) 100%, 0 100%)`: undefined,
+            clipPath: one.distance >= 60 ? `polygon(0 0, calc(0% + 45px) 0, 100% 50%, 100% 50%, calc(0% + 45px) 100%, 0 100%)`: undefined,
             transition: "clip-path 0.5s ease-in-out"
           }}/>
       </div>
