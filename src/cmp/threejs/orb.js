@@ -1,4 +1,4 @@
-import { useRef } from "react"
+import { useRef, useState } from "react"
 import { useTouch } from "@/hooks"
 import { useFrame } from "@react-three/fiber"
 import { RigidBody } from "@react-three/rapier"
@@ -7,6 +7,7 @@ import { Vector3, Spherical } from "three"
 export const Orb = () => {
 
   const ref = useRef( null )
+  const [ isOn, setIsOn ] = useState( false )
   const { force, two } = useTouch()
 
   const spherical = useRef( new Spherical( 10, Math.PI / 4, 0 ))
@@ -35,9 +36,7 @@ export const Orb = () => {
     ref.current.applyImpulse( impulse, true )
 
     // ジャンプ処理
-    if (two.timestamp !== null) {
-      ref.current.applyImpulse(new Vector3(0, jumpImpulse, 0), true)
-    }
+    if ( two.timestamp !== null ) ref.current.applyImpulse( new Vector3( 0, jumpImpulse, 0 ), true )
 
     // カメラの追従処理
     const targetPosition = ref.current.translation()
@@ -57,7 +56,8 @@ export const Orb = () => {
       lockRotations
       position={[ 0, 5, 0 ]}
       restitution={ 0.3 }
-      linearDamping={ two.timestamp ? 0: 2 }>
+      onCollisionEnter={() => setIsOn( true )}
+      onIntersectionExit={() => setIsOn( false )}>
       <mesh>
         <sphereGeometry args={[ 1 ]}/>
         <meshNormalMaterial/>
