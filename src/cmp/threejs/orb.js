@@ -13,7 +13,7 @@ export const Orb = () => {
   const spherical = useRef( new Spherical( 10, Math.PI / 4, 0 ))
   const moveSpeed = 1
   const lerpSpeed = 0.1
-  const jumpImpulse = 5 // ジャンプの強さを調整
+  const jumpImpulse = 2
 
   const movement = new Vector3()
   const direction = new Vector3()
@@ -36,7 +36,7 @@ export const Orb = () => {
     ref.current.applyImpulse( impulse, true )
 
     // ジャンプ処理
-    if ( two.timestamp !== null ) ref.current.applyImpulse( new Vector3( 0, jumpImpulse, 0 ), true )
+    if ( two.timestamp !== null && isOn ) ref.current.applyImpulse( new Vector3( 0, jumpImpulse, 0 ), true )
 
     // カメラの追従処理
     const targetPosition = ref.current.translation()
