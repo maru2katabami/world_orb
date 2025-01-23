@@ -31,12 +31,17 @@ export default function useTouch() {
     setForce({ forward, backward, left, right })
   }, [ init ])
 
-  const handleEnd = useCallback(() => {
-    setInit({ x: null, y: null })
-    setOne({ x: null, y: null, distance: 0, angle: 0 })
-    setTwo({ x: null, y: null, timestamp: null, hold: Date.now() - two.timestamp })
-    setForce({ forward: 0, backward: 0, left: 0, right: 0 })
-  }, [])
+  const handleEnd = useCallback((event) => {
+    const remainingTouches = event.touches;
+    if (remainingTouches.length === 0) {
+      setInit({ x: null, y: null });
+      setOne({ x: null, y: null, distance: 0, angle: 0 });
+      setForce({ forward: 0, backward: 0, left: 0, right: 0 });
+    } else if (remainingTouches.length === 1) {
+      setTwo({ x: null, y: null, timestamp: null, hold: Date.now() - two.timestamp });
+    }
+  }, [two.timestamp]);
+  
 
   useEffect(() => {
     window.addEventListener("touchstart", handleStart )
