@@ -57,7 +57,7 @@ export const Orb = () => {
       lockRotations
       position={[ 0, 5, 0 ]}
       restitution={ 0.3 }
-      linearDamping={ 2 }>
+      linearDamping={ two.timestamp ? 0.1: 2 }>
       <mesh>
         <sphereGeometry args={[ 1 ]}/>
         <meshNormalMaterial/>

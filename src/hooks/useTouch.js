@@ -40,7 +40,7 @@ export default function useTouch() {
     } else if (remainingTouches.length === 1) {
       setTwo({ x: null, y: null, timestamp: null, hold: Date.now() - two.timestamp });
     }
-  }, [two.timestamp]);
+  }, [ two.timestamp ]);
   
 
   useEffect(() => {
