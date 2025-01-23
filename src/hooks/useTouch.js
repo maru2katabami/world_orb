@@ -30,17 +30,27 @@ export default function useTouch() {
     setOne({ x, y, distance: clampedDistance, angle: Math.atan2( dy, dx ) * ( 180 / Math.PI )})
     setForce({ forward, backward, left, right })
   }, [ init ])
-
+  
   const handleEnd = useCallback((event) => {
     const remainingTouches = event.touches;
+    
     if (remainingTouches.length === 0) {
+      // すべてのタッチが終了した場合の処理
       setInit({ x: null, y: null });
       setOne({ x: null, y: null, distance: 0, angle: 0 });
       setForce({ forward: 0, backward: 0, left: 0, right: 0 });
-    } else if (remainingTouches.length === 1) {
-      setTwo({ x: null, y: null, timestamp: null, hold: Date.now() - two.timestamp });
+      setTwo({ x: null, y: null, timestamp: null, hold: 0 }); // twoもリセット
+    } else if (remainingTouches.length === 1 && two.timestamp) {
+      // 2つ目のタッチが終了した場合の処理
+      setTwo((prevTwo) => ({
+        ...prevTwo,
+        x: null,
+        y: null,
+        hold: Date.now() - prevTwo.timestamp, // ホールド時間を記録
+      }));
     }
-  }, [ two.timestamp ]);
+  }, [two.timestamp]);
+  
   
 
   useEffect(() => {
