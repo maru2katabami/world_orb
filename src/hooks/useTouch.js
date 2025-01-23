@@ -32,17 +32,12 @@ export default function useTouch() {
   }, [ init ])
 
   const handleEnd = useCallback((event) => {
-    const remainingTouches = event.touches;
-    const endedTouches = event.changedTouches;
-  
-    if (remainingTouches.length === 0) {
-      // 全ての指が離れた場合
+    if ( event.touches.length === 0) {
       setInit({ x: null, y: null });
       setOne({ x: null, y: null, distance: 0, angle: 0 });
       setForce({ forward: 0, backward: 0, left: 0, right: 0 });
       setTwo({ x: null, y: null, timestamp: null, hold: 0 });
-    } else if (endedTouches.length === 1) {
-      // 特定の指が離れた場合
+    } else if ( event.touches.length === 1) {
       const touch = endedTouches[0]; // 離れた指の情報
       setTwo((prev) => ({
         ...prev,
