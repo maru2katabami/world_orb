@@ -3,11 +3,13 @@ import { useCallback, useEffect, useState } from "react"
 export default function useTouch() {
 
   const [ init, setInit ] = useState({ x: null, y: null })
-  const [ first, setFirst ] = useState({ x: null, y: null, distance: 0, angle: 0 })
+  const [ one, setOne ] = useState({ x: null, y: null, distance: 0, angle: 0 })
+  const [ two, setTwo ] = useState({ x: null, y: null, timestamp: null, hold: 0 })
   const [ force, setForce ] = useState({ forward: 0, backward: 0, left: 0, right: 0 })
 
   const handleStart = useCallback( event => {
     setInit({ x: event.touches[0].clientX, y: event.touches[0].clientY })
+    if ( event.touches[1]) setTwo({ x: touches[1].clientX, y: touches[1].clientY, timestamp: Date.now()})
   }, [])
 
   const handleMove = useCallback( event => {
@@ -25,13 +27,14 @@ export default function useTouch() {
     const backward = dy > 0 ? normalizedDy * normalizedDistance : 0
     const right = dx > 0 ? normalizedDx * normalizedDistance : 0
     const left = dx < 0 ? normalizedDx * normalizedDistance : 0
-    setFirst({ x, y, distance: clampedDistance, angle: Math.atan2( dy, dx ) * ( 180 / Math.PI )})
+    setOne({ x, y, distance: clampedDistance, angle: Math.atan2( dy, dx ) * ( 180 / Math.PI )})
     setForce({ forward, backward, left, right })
   }, [ init ])
 
   const handleEnd = useCallback(() => {
     setInit({ x: null, y: null })
-    setFirst({ x: null, y: null, distance: 0, angle: 0 })
+    setOne({ x: null, y: null, distance: 0, angle: 0 })
+    setTwo({ x: null, y: null, timestamp: null, hold: Date.now() - two.timestamp })
     setForce({ forward: 0, backward: 0, left: 0, right: 0 })
   }, [])
 
@@ -58,11 +61,11 @@ export default function useTouch() {
         <div
           className={`absolute top-1/2 left-1/2 min-w-20 h-20 rounded-full`}
           style={{
-            width: `${ Math.max( first.distance + 40, 80 )}px`,
+            width: `${ Math.max( one.distance + 40, 80 )}px`,
             boxShadow: "inset 0 0 50px skyblue",
-            transform: `translate(-40px,-50%) rotate(${ first.angle }deg)`,
+            transform: `translate(-40px,-50%) rotate(${ one.angle }deg)`,
             transformOrigin: "40px center",
-            clipPath: first.distance >= 60 ? `polygon(0 0, calc(0% + 45px) 0, 100% 45%, 100% 55%, calc(0% + 45px) 100%, 0 100%)`: undefined,
+            clipPath: one.distance >= 60 ? `polygon(0 0, calc(0% + 45px) 0, 100% 45%, 100% 55%, calc(0% + 45px) 100%, 0 100%)`: undefined,
             transition: "clip-path 0.5s ease-in-out"
           }}/>
       </div>
@@ -76,5 +79,5 @@ export default function useTouch() {
     </div>
   )
 
-  return { force, TouchUI }
+  return { force, two, TouchUI }
 }

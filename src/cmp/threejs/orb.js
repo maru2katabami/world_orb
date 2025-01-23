@@ -7,11 +7,12 @@ import { Vector3, Spherical } from "three"
 export const Orb = () => {
 
   const ref = useRef( null )
-  const { force } = useTouch()
+  const { force, two } = useTouch()
 
   const spherical = useRef( new Spherical( 10, Math.PI / 4, 0 ))
   const moveSpeed = 1
   const lerpSpeed = 0.1
+  const jumpImpulse = 5 // ジャンプの強さを調整
 
   const movement = new Vector3()
   const direction = new Vector3()
@@ -22,6 +23,8 @@ export const Orb = () => {
 
   useFrame(({ camera }) => {
     if ( !ref.current ) return
+
+    // 移動処理
     movement.set( force.left + force.right, 0, force.forward + force.backward )
     camera.getWorldDirection( direction )
     forward.set( -direction.x, 0, -direction.z ).normalize()
@@ -31,6 +34,12 @@ export const Orb = () => {
 
     ref.current.applyImpulse( impulse, true )
 
+    // ジャンプ処理
+    if (two.timestamp !== null) {
+      ref.current.applyImpulse(new Vector3(0, jumpImpulse, 0), true)
+    }
+
+    // カメラの追従処理
     const targetPosition = ref.current.translation()
     spherical.current.theta -= movement.x * 0.05
     spherical.current.phi = Math.max( 0.1, Math.min( Math.PI / 2 - 0.1, spherical.current.phi ))
