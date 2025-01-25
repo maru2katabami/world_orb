@@ -25,8 +25,6 @@ export default function useTouch() {
   }
 
   const handleStart = useCallback( event => {
-    console.log( event )
-    
     const touches = init
     event.touches.length === 1 ? touches.push( event.touches[0]):
     event.touches.length === 2 ? touches.push( event.touches[1]):
@@ -76,7 +74,7 @@ export default function useTouch() {
            }}>
         <div className="absolute top-1/2 left-1/2 h-20 rounded-full"
              style={{
-              transform: `translate(-40px,-50%) rotate(${angle}deg)`,
+              transform: `translate(-40px,-50%) rotate(${ angle }deg)`,
               transformOrigin: "40px center",
               width: `${ Math.max( distance, 80 )}px`,
               background: "linear-gradient( to right, #00FFFF55, #00FFFF00 )",
