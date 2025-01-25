@@ -8,7 +8,7 @@ export default function useTouch() {
   const [ force, setForce ] = useState({ forward: 0, backward: 0, left: 0, right: 0 })
 
   const handleStart = useCallback( event => {
-    setInit({ x: event.touches[0].clientX, y: event.touches[0].clientY })
+    if ( event.touches.length === 1 ) setInit({ x: event.touches[0].clientX, y: event.touches[0].clientY })
     if ( event.touches[1]) setTwo({ x: event.touches[1].clientX, y: event.touches[1].clientY, timestamp: Date.now()})
   }, [])
 
