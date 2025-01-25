@@ -3,9 +3,9 @@
 import { Canvas } from "@react-three/fiber"
 import { Environment, OrbitControls } from "@react-three/drei"
 import { Physics } from "@react-three/rapier"
-import { Objects } from "./objects"
 import { Orb } from "./orb"
 import { Perf } from "r3f-perf"
+import Mapping from "./mapping"
 
 export const ThreeJS = () => {
   return (
@@ -13,7 +13,7 @@ export const ThreeJS = () => {
       <Environment preset="city"/>
       <ambientLight intensity={ 10 }/>
       <Physics>
-        <Objects/>
+        <Mapping/>
         <Orb/>
       </Physics>
       <Perf/>
