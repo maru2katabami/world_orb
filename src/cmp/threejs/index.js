@@ -12,7 +12,7 @@ export const ThreeJS = () => {
     <Canvas>
       <Environment preset="city"/>
       <ambientLight intensity={ 10 }/>
-      <Physics>
+      <Physics debug>
         <Mapping/>
         <Orb/>
       </Physics>

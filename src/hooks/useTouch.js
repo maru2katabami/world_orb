@@ -72,10 +72,10 @@ export default function useTouch() {
           className={`absolute top-1/2 left-1/2 min-w-20 h-20 rounded-full`}
           style={{
             width: `${ Math.max( one.distance + 40, 80 )}px`,
-            boxShadow: "inset 0 0 50px skyblue",
+            background: "linear-gradient( to right, #00FFFF55, #00FFFF00 )",
             transform: `translate(-40px,-50%) rotate(${ one.angle }deg)`,
             transformOrigin: "40px center",
-            clipPath: one.distance >= 60 ? `polygon(0 0, calc(0% + 45px) 0, 100% 50%, 100% 50%, calc(0% + 45px) 100%, 0 100%)`: undefined,
+            clipPath: one.distance >= 60 ? `polygon(0 0, calc(0% + 45px) 0, 100% 40%, 100% 60%, calc(0% + 45px) 100%, 0 100%)`: undefined,
             transition: "clip-path 0.5s ease-in-out"
           }}/>
       </div>
