@@ -8,10 +8,9 @@ export const Orb = () => {
 
   const ref = useRef( null )
   const [ isOn, setIsOn ] = useState( false )
-  const { force, two } = useTouch()
+  const { init, force } = useTouch()
 
   const spherical = useRef( new Spherical( 10, Math.PI / 4, 0 ))
-  const moveSpeed = 1
   const lerpSpeed = 0.1
   const jumpImpulse = 10
 
@@ -25,42 +24,36 @@ export const Orb = () => {
   useFrame(({ camera }) => {
     if (!ref.current) return;
   
-    // 移動処理
-    movement.set(force.left + force.right, 0, force.forward + force.backward);
-    camera.getWorldDirection(direction);
-    forward.set(-direction.x, 0, -direction.z).normalize();
-    right.crossVectors(new Vector3(0, 1, 0), forward).normalize();
+    movement.set( force.left + force.right, 0, force.forward + force.backward )
+    camera.getWorldDirection( direction )
+    forward.set( -direction.x, 0, -direction.z ).normalize()
+    right.crossVectors( new Vector3( 0, 1, 0 ), forward ).normalize()
   
     impulse
-      .set(0, 0, 0)
-      .addScaledVector(forward, movement.z * moveSpeed)
-      .addScaledVector(right, movement.x * moveSpeed);
+      .set( 0, 0, 0 )
+      .addScaledVector( forward, movement.z )
+      .addScaledVector( right, movement.x )
   
-    ref.current.applyImpulse(impulse, true);
+    ref.current.applyImpulse( impulse, true )
   
-    // ジャンプ処理
-    if (two.timestamp !== null && isOn) {
-      ref.current.applyImpulse(new Vector3(0, jumpImpulse, 0), true);
-    }
+    if ( init.length === 2 && isOn ) ref.current.applyImpulse( new Vector3( 0, jumpImpulse, 0 ), true )
   
-    // カメラの追従処理
-    const targetPosition = ref.current.translation();
-    spherical.current.theta -= movement.x * 0.05;
-    spherical.current.phi = Math.max(0.1, Math.min(Math.PI / 2 - 0.1, spherical.current.phi));
-    spherical.current.makeSafe();
-    newCameraPosition.setFromSpherical(spherical.current).add(targetPosition);
+    const targetPosition = ref.current.translation()
+    spherical.current.theta -= movement.x * 0.05
+    spherical.current.phi = Math.max( 0.1, Math.min( Math.PI / 2 - 0.1, spherical.current.phi ))
+    spherical.current.makeSafe()
+    newCameraPosition.setFromSpherical( spherical.current ).add( targetPosition )
   
-    camera.position.lerp(newCameraPosition, lerpSpeed);
-    camera.lookAt(targetPosition.x, targetPosition.y + 3, targetPosition.z);
+    camera.position.lerp( newCameraPosition, lerpSpeed )
+    camera.lookAt( targetPosition.x, targetPosition.y + 3, targetPosition.z )
   
-    // refの回転処理
-    const lookAtTarget = new Vector3();
-    camera.getWorldDirection(lookAtTarget); // カメラの向きに基づくターゲット方向
-    lookAtTarget.y = 0; // 水平面のみに制限
-    lookAtTarget.normalize();
-    const quaternion = new Quaternion().setFromUnitVectors(new Vector3(0, 0, -1), lookAtTarget);
-    ref.current.setRotation(quaternion, true);
-  });
+    const lookAtTarget = new Vector3()
+    camera.getWorldDirection( lookAtTarget )
+    lookAtTarget.y = 0
+    lookAtTarget.normalize()
+    const quaternion = new Quaternion().setFromUnitVectors( new Vector3( 0, 0, -1 ), lookAtTarget )
+    ref.current.setRotation( quaternion, true )
+  })
   
 
   return (

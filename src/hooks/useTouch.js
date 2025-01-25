@@ -1,53 +1,53 @@
-import { useCallback, useEffect, useState } from "react"
+import { useCallback, useEffect, useState } from "react";
 
 export default function useTouch() {
-
-  const [ init, setInit ] = useState({ x: null, y: null })
-  const [ one, setOne ] = useState({ x: null, y: null, distance: 0, angle: 0 })
-  const [ two, setTwo ] = useState({ x: null, y: null, timestamp: null, hold: 0 })
+  const [ init, setInit ] = useState([])
+  const [ move, setMove ] = useState([])
+  const [ distance, setDistance ] = useState( 0 )
+  const [ angle, setAngle ] = useState( 0 )
   const [ force, setForce ] = useState({ forward: 0, backward: 0, left: 0, right: 0 })
 
-  const handleStart = useCallback( event => {
-    if ( event.touches.length === 1 ) setInit({ x: event.touches[0].clientX, y: event.touches[0].clientY })
-    if ( event.touches[1]) setTwo({ x: event.touches[1].clientX, y: event.touches[1].clientY, timestamp: Date.now()})
-  }, [])
-
-  const handleMove = useCallback( event => {
-    if ( !init.x ) return
-    const x = event.touches[0].clientX
-    const y = event.touches[0].clientY
-    const dx = x - init.x
-    const dy = y - init.y
-    const distance = Math.sqrt( dx * dx + dy * dy )
-    const clampedDistance = Math.min( distance, 200 )
-    const normalizedDistance = clampedDistance / 200 || 0
-    const normalizedDx = dx / distance || 0
-    const normalizedDy = dy / distance || 0
+  const handleDistanceAngle = ( init, move ) => {
+    const dx = move.clientX - init.clientX
+    const dy = move.clientY - init.clientY
+    const ds = Math.sqrt( dx * dx + dy * dy )
+    const clampedDistance = Math.min( ds, 300 )
+    const normalizedDistance = clampedDistance / 300 || 0
+    const normalizedDx = dx / ds || 0
+    const normalizedDy = dy / ds || 0
     const forward = dy < 0 ? normalizedDy * normalizedDistance : 0
     const backward = dy > 0 ? normalizedDy * normalizedDistance : 0
     const right = dx > 0 ? normalizedDx * normalizedDistance : 0
     const left = dx < 0 ? normalizedDx * normalizedDistance : 0
-    setOne({ x, y, distance: clampedDistance, angle: Math.atan2( dy, dx ) * ( 180 / Math.PI )})
+    setDistance( clampedDistance )
+    setAngle( Math.atan2( dy, dx ) * ( 180 / Math.PI ))
     setForce({ forward, backward, left, right })
-  }, [ init ])
+  }
 
-  const handleEnd = useCallback((event) => {
-    if ( event.touches.length === 0) {
-      setInit({ x: null, y: null });
-      setOne({ x: null, y: null, distance: 0, angle: 0 });
-      setForce({ forward: 0, backward: 0, left: 0, right: 0 });
-      setTwo({ x: null, y: null, timestamp: null, hold: 0 });
-    } else if ( event.touches.length === 1) {
-      const touch = endedTouches[0]; // 離れた指の情報
-      setTwo((prev) => ({
-        ...prev,
-        x: touch.clientX,
-        y: touch.clientY,
-        hold: prev.timestamp ? Date.now() - prev.timestamp : 0,
-      }));
-    }
-  }, []);
-  
+  const handleStart = useCallback( event => {
+    const touches = init
+    event.touches.length === 1 ? touches.push( event.touches[0]):
+    event.touches.length === 2 ? touches.push( event.touches[1]):
+    event.touches.length === 3 ? touches.push( event.touches[2]):
+    event.touches.length === 4 ? touches.push( event.touches[3]):
+    event.touches.length === 5 ? touches.push( event.touches[4]): null
+    setInit( touches )
+  },[ init ])
+
+  const handleMove = useCallback( event => {
+    if ( !init.length ) return
+    handleDistanceAngle( init[0], event.touches[0])
+    setMove([...event.touches ])
+  },[ init, move ])
+
+  const handleEnd = useCallback( event => {
+    setInit([])
+    setMove([])
+    setDistance( 0 )
+    setAngle( 0 )
+    setForce({ forward: 0, backward: 0, left: 0, right: 0 })
+  },[ init, move, distance, angle, force ])
+
   useEffect(() => {
     window.addEventListener("touchstart", handleStart )
     window.addEventListener("touchmove", handleMove )
@@ -57,37 +57,29 @@ export default function useTouch() {
       window.removeEventListener("touchmove", handleMove )
       window.removeEventListener("touchend", handleEnd )
     }
-  }, [ handleStart, handleMove, handleEnd ])
+  }, [ handleMove ])
 
-  const TouchUI = () => (
-    <div className="absolute top-0 size-full touch-none pointer-events-none">
-      <div
-        className={`absolute size-20 rounded-full ${ !init.x && "hidden"} overflow-visible`}
-        style={{
-          left: `${ init.x }px`,
-          top: `${ init.y }px`,
-          transform: `translate(-50%,-50%)`,
-        }}>
-        <div
-          className={`absolute top-1/2 left-1/2 min-w-20 h-20 rounded-full`}
-          style={{
-            width: `${ Math.max( one.distance + 40, 80 )}px`,
-            background: "linear-gradient( to right, #00FFFF55, #00FFFF00 )",
-            transform: `translate(-40px,-50%) rotate(${ one.angle }deg)`,
-            transformOrigin: "40px center",
-            clipPath: one.distance >= 60 ? `polygon(0 0, calc(0% + 45px) 0, 100% 40%, 100% 60%, calc(0% + 45px) 100%, 0 100%)`: undefined,
-            transition: "clip-path 0.5s ease-in-out"
-          }}/>
+  const TouchUI = () => {
+    return (
+      <div className="absolute -translate-x-1/2 -translate-y-1/2 size-20 overflow-visible"
+           style={{
+            top: init.length ? `${init[0].clientY}px` : "none",
+            left: init.length ? `${init[0].clientX}px` : "none",
+            opacity: distance,
+            transition: "opacity 1s",
+           }}>
+        <div className="absolute top-1/2 left-1/2 h-20 rounded-full"
+             style={{
+              transform: `translate(-40px,-50%) rotate(${angle}deg)`,
+              transformOrigin: "40px center",
+              width: `${ Math.max( distance, 80 )}px`,
+              background: "linear-gradient( to right, #00FFFF55, #00FFFF00 )",
+              clipPath: distance >= 60 ? `polygon(0 0, calc(0% + 45px) 0, 100% 40%, 100% 60%, calc(0% + 45px) 100%, 0 100%)`: undefined,
+              transition: "clip-path 0.5s ease-in-out"
+             }}/>
       </div>
-      {/* Debug UI */}
-      <ul className="absolute p-5 bottom-5 right-5 w-80 h-40 rounded-lg border-2 pointer-events-none">
-        <li>Forward: { force.forward }</li>
-        <li>Backward: { force.backward }</li>
-        <li>Left: { force.left }</li>
-        <li>Right: { force.right }</li>
-      </ul>
-    </div>
-  )
+    )
+  }
 
-  return { force, two, TouchUI }
+  return { init, move, force, TouchUI }
 }
