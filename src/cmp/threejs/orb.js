@@ -11,7 +11,7 @@ export const Orb = () => {
   const { init, force } = useTouch()
 
   const spherical = useRef( new Spherical( 10, Math.PI / 4, 0 ))
-  const lerpSpeed = 0.1
+  const lerpSpeed = 0.02
   const jumpImpulse = 10
 
   const movement = new Vector3()
