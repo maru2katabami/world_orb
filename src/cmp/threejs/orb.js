@@ -3,6 +3,7 @@ import { useTouch } from "@/hooks"
 import { useFrame } from "@react-three/fiber"
 import { RigidBody } from "@react-three/rapier"
 import { Vector3, Quaternion, Spherical } from "three"
+import { useGLTF } from "@react-three/drei"
 
 export const Orb = () => {
 
@@ -10,9 +11,11 @@ export const Orb = () => {
   const [ isOn, setIsOn ] = useState( false )
   const { init, force } = useTouch()
 
+  const { nodes } = useGLTF("/orb.glb")
+
   const spherical = useRef( new Spherical( 10, Math.PI / 4, 0 ))
   const lerpSpeed = 0.02
-  const jumpImpulse = 10
+  const jumpImpulse = 50
 
   const movement = new Vector3()
   const direction = new Vector3()
@@ -66,10 +69,7 @@ export const Orb = () => {
       linearDamping={ 0.5 }
       onCollisionEnter={() => setIsOn( true )}
       onIntersectionExit={() => setIsOn( false )}>
-      <mesh>
-        <sphereGeometry args={[ 1 ]}/>
-        <meshNormalMaterial/>
-      </mesh>
+      <primitive object={ nodes.orb }/>
     </RigidBody>
   )
 }
