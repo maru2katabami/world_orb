@@ -25,6 +25,8 @@ export default function useTouch() {
   }
 
   const handleStart = useCallback( event => {
+    console.log( event )
+    
     const touches = init
     event.touches.length === 1 ? touches.push( event.touches[0]):
     event.touches.length === 2 ? touches.push( event.touches[1]):
@@ -41,11 +43,15 @@ export default function useTouch() {
   },[ init, move ])
 
   const handleEnd = useCallback( event => {
-    setInit([])
-    setMove([])
-    setDistance( 0 )
-    setAngle( 0 )
-    setForce({ forward: 0, backward: 0, left: 0, right: 0 })
+    if ( event.touches.length === 0 ) {
+      setInit([])
+      setMove([])
+      setDistance( 0 )
+      setAngle( 0 )
+      setForce({ forward: 0, backward: 0, left: 0, right: 0 })
+    } else if ( event.touches.length = 2 ) {
+      setInit([ init[0]])
+    }
   },[ init, move, distance, angle, force ])
 
   useEffect(() => {
