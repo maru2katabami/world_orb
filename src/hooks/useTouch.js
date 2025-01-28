@@ -25,13 +25,13 @@ export default function useTouch() {
   }
 
   const handleStart = useCallback( event => {
-    setInit(prevInit => {
-      const prevInitMap = new Map(prevInit.map(t => [t.identifier, t]));
-      const newTouches = Array.from(event.touches).map(touch => 
-        prevInitMap.get(touch.identifier) || touch // 既存の指の位置を保持
-      );
-      return newTouches;
-    });
+    const touches = init
+    event.touches.length === 1 ? touches.push( event.touches[0]):
+    event.touches.length === 2 ? touches.push( event.touches[1]):
+    event.touches.length === 3 ? touches.push( event.touches[2]):
+    event.touches.length === 4 ? touches.push( event.touches[3]):
+    event.touches.length === 5 ? touches.push( event.touches[4]): null
+    setInit( touches )
   },[])
 
   const handleMove = useCallback( event => {
@@ -48,11 +48,7 @@ export default function useTouch() {
       setAngle( 0 )
       setForce({ forward: 0, backward: 0, left: 0, right: 0 })
     } else if ( event.touches.length === 1 ) {
-      const remainingTouches = Array.from(event.touches);
-      const updatedInit = init.filter((touch) =>
-        remainingTouches.some((t) => t.identifier === touch.identifier)
-      )
-      setInit(updatedInit);
+      setInit([ init[0]])
     }
   },[])
 
