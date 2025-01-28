@@ -47,7 +47,7 @@ export default function useTouch() {
       setDistance( 0 )
       setAngle( 0 )
       setForce({ forward: 0, backward: 0, left: 0, right: 0 })
-    } else if ( event.touches.length = 2 ) {
+    } else if ( event.touches.length = 1 ) {
       setInit([ init[0]])
     }
   },[])
