@@ -15,7 +15,7 @@ export const Orb = () => {
 
   const spherical = useRef( new Spherical( 10, Math.PI / 4, 0 ))
   const lerpSpeed = 0.02
-  const jumpImpulse = 50
+  const jumpImpulse = 25
 
   const movement = new Vector3()
   const direction = new Vector3()
