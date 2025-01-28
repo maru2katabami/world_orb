@@ -41,6 +41,8 @@ export default function useTouch() {
   },[ init, move ])
 
   const handleEnd = useCallback( event => {
+    console.log( event.touches )
+    
     if ( event.touches.length === 0 ) {
       setInit([])
       setMove([])
