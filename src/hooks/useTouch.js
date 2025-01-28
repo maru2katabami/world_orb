@@ -48,7 +48,11 @@ export default function useTouch() {
       setAngle( 0 )
       setForce({ forward: 0, backward: 0, left: 0, right: 0 })
     } else if ( event.touches.length === 1 ) {
-      setInit([ ...event.touches ])
+      const remainingTouches = Array.from(event.touches);
+      const updatedInit = init.filter((touch) =>
+        remainingTouches.some((t) => t.identifier === touch.identifier)
+      )
+      setInit(updatedInit);
     }
   },[])
 
