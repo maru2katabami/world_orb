@@ -32,7 +32,7 @@ export default function useTouch() {
     event.touches.length === 4 ? touches.push( event.touches[3]):
     event.touches.length === 5 ? touches.push( event.touches[4]): null
     setInit( touches )
-  },[ init ])
+  },[])
 
   const handleMove = useCallback( event => {
     if ( !init.length ) return
@@ -50,7 +50,7 @@ export default function useTouch() {
     } else if ( event.touches.length = 2 ) {
       setInit([ init[0]])
     }
-  },[ init, move, distance, angle, force ])
+  },[])
 
   useEffect(() => {
     window.addEventListener("touchstart", handleStart )
@@ -76,8 +76,9 @@ export default function useTouch() {
              style={{
               transform: `translate(-40px,-50%) rotate(${ angle }deg)`,
               transformOrigin: "40px center",
-              width: `${ Math.max( distance, 80 )}px`,
-              background: "linear-gradient( to right, #00FFFF55, #00FFFF00 )",
+              width: `${ Math.max( distance + 40, 80 )}px`,
+              boxShadow: "inset 60px 0 30px #00000055",
+              background: "linear-gradient( to right, #FFFFFF55, transparent )",
               clipPath: distance >= 60 ? `polygon(0 0, calc(0% + 45px) 0, 100% 40%, 100% 60%, calc(0% + 45px) 100%, 0 100%)`: undefined,
               transition: "clip-path 0.5s ease-in-out"
              }}/>
