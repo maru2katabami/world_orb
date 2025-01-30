@@ -14,7 +14,7 @@ export const Orb = () => {
   const { nodes } = useGLTF("/orb.glb")
 
   const spherical = useRef( new Spherical( 10, Math.PI / 4, 0 ))
-  const lerpSpeed = 0.02
+  const lerpSpeed = 0.025
   const jumpImpulse = 25
 
   const movement = new Vector3()
@@ -34,7 +34,7 @@ export const Orb = () => {
   
     impulse
       .set( 0, 0, 0 )
-      .addScaledVector( forward, movement.z )
+      .addScaledVector( forward, movement.z * 1.5 )
       .addScaledVector( right, movement.x )
   
     ref.current.applyImpulse( impulse, true )
